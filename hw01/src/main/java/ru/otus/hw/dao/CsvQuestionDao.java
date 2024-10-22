@@ -19,24 +19,6 @@ import java.util.List;
 public class CsvQuestionDao implements QuestionDao {
     private final TestFileNameProvider fileNameProvider;
 
-    private InputStream getFileFromResourceAsStream(String fileName) {
-
-        // for static access
-        //ClassLoader classLoader1 = FileResourcesUtils.class.getClassLoader();
-
-        // The class loader that loaded the class
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
-
-        // the stream holding the file content
-        if (inputStream == null) {
-            throw new IllegalArgumentException("file not found! " + fileName);
-        } else {
-            return inputStream;
-        }
-
-    }
-
     @Override
     public List<Question> findAll() {
 
@@ -53,10 +35,28 @@ public class CsvQuestionDao implements QuestionDao {
 
             questionList = csvToBean.parse().stream().map(QuestionDto::toDomainObject).toList();
 
-        } catch (RuntimeException | IOException err) {
-            throw new QuestionReadException("Error processing question list : ", err);
+        } catch (RuntimeException | IOException ex) {
+            throw new QuestionReadException("Error processing question list : ", ex);
         }
 
         return questionList;
+    }
+
+    private InputStream getFileFromResourceAsStream(String fileName) {
+
+        // for static access
+        //ClassLoader classLoader1 = FileResourcesUtils.class.getClassLoader();
+
+        // The class loader that loaded the class
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(fileName);
+
+        // the stream holding the file content
+        if (inputStream == null) {
+            throw new IllegalArgumentException("file not found! " + fileName);
+        } else {
+            return inputStream;
+        }
+
     }
 }
