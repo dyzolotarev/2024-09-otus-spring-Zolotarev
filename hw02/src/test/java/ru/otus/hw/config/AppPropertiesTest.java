@@ -1,10 +1,9 @@
-package ru.otus.hw;
+package ru.otus.hw.config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import ru.otus.hw.config.AppProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

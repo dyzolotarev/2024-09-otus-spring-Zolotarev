@@ -16,14 +16,6 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
-    private void printQuestion(Question question) {
-        ioService.printLine(question.text());
-        byte numAnswer = 1;
-        for (Answer answer : question.answers()) {
-            ioService.printLine(numAnswer++ + ". " + answer.text());
-        }
-    }
-
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
@@ -39,5 +31,13 @@ public class TestServiceImpl implements TestService {
             testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
+    }
+
+    private void printQuestion(Question question) {
+        ioService.printLine(question.text());
+        byte numAnswer = 1;
+        for (Answer answer : question.answers()) {
+            ioService.printLine(numAnswer++ + ". " + answer.text());
+        }
     }
 }

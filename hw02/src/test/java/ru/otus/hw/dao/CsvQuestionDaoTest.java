@@ -1,10 +1,9 @@
-package ru.otus.hw;
+package ru.otus.hw.dao;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.otus.hw.config.AppProperties;
-import ru.otus.hw.dao.CsvQuestionDao;
 import ru.otus.hw.domain.Question;
 
 import java.util.List;
