@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppProperties implements TestConfig, TestFileNameProvider {
 
-    private final int rightAnswersCountToPass;
+    private int rightAnswersCountToPass;
 
-    private final String testFileName;
+    private String testFileName;
 
     public AppProperties(
             @Value("${test.rightAnswersCountToPass}") int rightAnswersCountToPass,
