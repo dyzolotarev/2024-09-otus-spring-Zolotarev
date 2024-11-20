@@ -1,0 +1,6 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Is there life on Mars?;Science doesn't know this yet%true|Certainly. The red UFO is from Mars. And green is from Venus%false|Absolutely not%false
+How should resources be loaded form jar in Java?;ClassLoader#geResourceAsStream or ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
+Which option is a good way to handle the exception?;@SneakyThrow%false|e.printStackTrace()%false|Rethrow with wrapping in business exception (for example, QuestionReadException)%true|Ignoring exception%false
+"What will be the values of the variables ""result1"" and ""result2""?  int a = 6;  int b = 42; int result1 = b / ++a; int result2 = b / a++;";result1: 6 result2: 6%true|result1: 6 result2: 7%false|result1: 7 result2: 6%false|result1: 7 result2: 7%false
+"What will be the value of the variable ""result""?  int i = 10; int j = 25; i += 5; j /= i; int result = i + j;";35%false|16%true|12%false|11%false

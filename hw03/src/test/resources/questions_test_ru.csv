@@ -1,0 +1,6 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Есть ли жизнь на Марсе?;Это науке пока не известно%true|Конечно. Красные (НЛО) это с Марса. А зеленые (НЛО) с Венеры%false|Точно нет%false
+Как нужно загружать ресурс из jar в Java?;ClassLoader#geResourceAsStream или ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
+Какой предпочтительный способ реакции на исключения?;@SneakyThrow%false|e.printStackTrace()%false|Проброс дальше с предварительным оборачиванием в бизнес-исключение (например, QuestionReadException)%true|Игнорирование исключения%false
+"Какие значения будут у переменных ""result1"" и ""result2""?  int a = 6;  int b = 42; int result1 = b / ++a; int result2 = b / a++;";result1: 6 result2: 6%true|result1: 6 result2: 7%false|result1: 7 result2: 6%false|result1: 7 result2: 7%false
+"Какое значение будет у переменной ""result""?  int i = 10; int j = 25; i += 5; j /= i; int result = i + j;";35%false|16%true|12%false|11%false
