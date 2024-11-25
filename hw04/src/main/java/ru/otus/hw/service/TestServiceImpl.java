@@ -1,11 +1,8 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
@@ -23,8 +20,6 @@ public class TestServiceImpl implements TestService {
 
     private final QuestionDao questionDao;
 
-    private boolean isTestPassing = false;
-
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
@@ -41,7 +36,6 @@ public class TestServiceImpl implements TestService {
             var isAnswerValid = question.answers().get(chosenAnswer - 1).isCorrect();
             testResult.applyAnswer(question, isAnswerValid);
         }
-        isTestPassing = true;
         return testResult;
     }
 
@@ -51,23 +45,6 @@ public class TestServiceImpl implements TestService {
         for (Answer answer : question.answers()) {
             ioService.printLine(numAnswer++ + ". " + answer.text());
         }
-    }
-
-    @ShellMethod(value = "Show questions", key = {"show-questions", "show"})
-    @ShellMethodAvailability(value = "isShowQuestionsAvailable")
-    private void printAllQuestions() {
-
-        var questions = questionDao.findAll();
-
-        for (var question : questions) {
-            ioService.printLine(question.text());
-        }
-    }
-
-    private Availability isShowQuestionsAvailable() {
-        return isTestPassing
-                ? Availability.available()
-                : Availability.unavailable(ioService.getMessage("TestService.show.message.not.availability"));
     }
 
 }

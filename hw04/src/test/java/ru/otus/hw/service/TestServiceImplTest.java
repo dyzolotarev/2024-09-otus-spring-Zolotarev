@@ -28,12 +28,11 @@ public class TestServiceImplTest {
     @MockBean
     private CsvQuestionDao mockCsvQuestionDao;
 
-    @Mock
-    private Student mockStudent;
-
     @DisplayName("Should print all questions and answers")
     @Test
     public void testPrintAllQuestionsAndAnswers() {
+
+        Student testStudent = new Student("TestFirstName", "TestLastName");
 
         List<Answer> testListAnwser = new ArrayList<>();
         testListAnwser.add(new Answer("TestAnswer1", true));
@@ -46,7 +45,7 @@ public class TestServiceImplTest {
         Mockito.when(mockIOService.readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString())).thenReturn(1);
 
         TestServiceImpl testService = new TestServiceImpl(mockIOService, mockCsvQuestionDao);
-        TestResult testResult = testService.executeTestFor(mockStudent);
+        TestResult testResult = testService.executeTestFor(testStudent);
         Mockito.verify(mockIOService, times(5)).printLine(anyString()); // 2 blank lines + 1 question + 2 answer
     }
 }
