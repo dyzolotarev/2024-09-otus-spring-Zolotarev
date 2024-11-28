@@ -6,9 +6,9 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
-import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.service.LocalizedIOService;
 import ru.otus.hw.service.TestRunnerService;
+import ru.otus.hw.service.TestServiceImpl;
 
 @ShellComponent
 @ShellCommandGroup("Application commands")
@@ -17,7 +17,7 @@ public class TestServiceCommands {
 
     private final TestRunnerService testRunner;
 
-    private final QuestionDao questionDao;
+    private final TestServiceImpl testService;
 
     private final LocalizedIOService ioService;
 
@@ -33,7 +33,7 @@ public class TestServiceCommands {
     @ShellMethodAvailability(value = "isShowQuestionsAvailable")
     private void printAllQuestions() {
 
-        var questions = questionDao.findAll();
+        var questions = testService.getAllQuestions();
 
         for (var question : questions) {
             ioService.printLine(question.text());
