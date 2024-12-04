@@ -8,7 +8,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import ru.otus.hw.service.LocalizedIOService;
 import ru.otus.hw.service.TestRunnerService;
-import ru.otus.hw.service.TestServiceImpl;
+import ru.otus.hw.service.TestService;
 
 @ShellComponent
 @ShellCommandGroup("Application commands")
@@ -17,7 +17,7 @@ public class TestServiceCommands {
 
     private final TestRunnerService testRunner;
 
-    private final TestServiceImpl testService;
+    private final TestService testService;
 
     private final LocalizedIOService ioService;
 
