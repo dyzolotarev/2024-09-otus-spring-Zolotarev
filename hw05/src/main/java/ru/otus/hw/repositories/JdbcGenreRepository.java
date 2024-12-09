@@ -2,6 +2,7 @@ package ru.otus.hw.repositories;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Genre;
@@ -10,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.Collections;
 import java.util.Map;
@@ -31,12 +31,9 @@ public class JdbcGenreRepository implements GenreRepository {
 
     @Override
     public List<Genre> findAllByIds(Set<Long> ids) {
-        List<Genre> genres = new ArrayList<>();
-        // Для отдельной книги много жанров не ожидаю, думаю допустимо их выдернуть поштучно
-        for (Long id : ids) {
-            findById(id).ifPresent(genres::add);
-        }
-        return genres;
+        MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
+        String sql = "select id, name from genres where id in (:ids)";
+        return namedParameterJdbcTemplate.query(sql, params, new GnreRowMapper());
     }
 
     @Override

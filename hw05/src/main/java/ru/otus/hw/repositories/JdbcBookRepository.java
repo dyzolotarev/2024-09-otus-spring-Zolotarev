@@ -37,7 +37,7 @@ public class JdbcBookRepository implements BookRepository {
         Map<String, Object> params = Collections.singletonMap("id", id);
         String sql = "select b.id, b.title, b.author_id, a.full_name, g.id genre_id, g.name genre_name " +
                      "  from books b " +
-                     "  left join authors a on a.id = b.author_id " +
+                     "  join authors a on a.id = b.author_id " +
                      "  join books_genres bg on bg.book_id = b.id " +
                      "  join genres g on g.id = bg.genre_id " +
                      " where b.id = :id " +
