@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Genre;
 
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @Import({JpaGenreRepository.class})
 public class JpaGenreRepositoryTest {
+
+    private static final long EXPECTED_NUMBER_OF_GENRES = 6;
 
     @Autowired
     private JpaGenreRepository repositoryJpa;
@@ -43,9 +46,8 @@ public class JpaGenreRepositoryTest {
     @Test
     void shouldReturnCorrectGenresList() {
         var actualGenres = repositoryJpa.findAll();
-        var expectedGenres= em.getEntityManager()
-                .createQuery("select g from Genre g", Genre.class).getResultList();
+        var expectedGenres = LongStream.range(1, EXPECTED_NUMBER_OF_GENRES + 1).boxed()
+                .map(id -> em.find(Genre.class, id)).toList();
         assertThat(actualGenres).isEqualTo(expectedGenres);
-//        actualGenres.forEach(System.out::println);
     }
 }

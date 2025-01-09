@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @Import({JpaAuthorRepository.class})
 public class JpaAuthorRepositoryTest {
+
+    private static final long EXPECTED_NUMBER_OF_AUTHORS = 3;
 
     @Autowired
     private JpaAuthorRepository repositoryJpa;
@@ -43,8 +46,8 @@ public class JpaAuthorRepositoryTest {
     @Test
     void shouldReturnCorrectAuthorsList() {
         var actualAuthors = repositoryJpa.findAll();
-        var expectedAuthors = em.getEntityManager()
-                .createQuery("select a from Author a", Author.class).getResultList();
+        var expectedAuthors = LongStream.range(1, EXPECTED_NUMBER_OF_AUTHORS + 1).boxed()
+                .map(id -> em.find(Author.class, id)).toList();
         assertThat(actualAuthors).isEqualTo(expectedAuthors);
     }
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Book;
 
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,20 +23,13 @@ public class JpaBookRepository implements BookRepository {
     private final EntityManager em;
 
     @Override
-    public Optional<Book> getBook(long id) {
-        return Optional.ofNullable(em.find(Book.class, id));
-    }
-
-    @Override
     public Optional<Book> findById(long id) {
 
         EntityGraph<?> entityGraph = em.getEntityGraph("books-authors-entity-graph");
         Map<String, Object> hints = new HashMap<>();
         hints.put(FETCH.getKey(), entityGraph);
 
-        var book = Optional.ofNullable(em.find(Book.class, id, hints));
-        book.ifPresent(value -> Hibernate.initialize(value.getGenres()));
-        return book;
+        return Optional.ofNullable(em.find(Book.class, id, hints));
     }
 
     @Override
@@ -48,11 +39,7 @@ public class JpaBookRepository implements BookRepository {
         TypedQuery<Book> query = em.createQuery("select b from Book b", Book.class);
         query.setHint(FETCH.getKey(), entityGraph);
 
-        var books = query.getResultList();
-        if (!isEmpty(books)) {
-            Hibernate.initialize(books.get(0).getGenres());
-        }
-        return books;
+        return query.getResultList();
     }
 
     @Override
@@ -65,7 +52,7 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        var book = getBook(id);
+        var book = findById(id);
         book.ifPresent(em::remove);
     }
 

@@ -7,9 +7,6 @@ import java.util.Optional;
 
 public interface BookRepository {
 
-    // lazy поиск книги без "обвеса" в виде авторов и жанров, когда он не нужен
-    Optional<Book> getBook(long id);
-
     Optional<Book> findById(long id);
 
     List<Book> findAll();

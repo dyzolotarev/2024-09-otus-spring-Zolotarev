@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +12,7 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.BookComment;
 
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @Import({JpaBookCommentRepository.class, JpaBookRepository.class, JpaGenreRepository.class})
 public class JpaBookCommentRepositoryTest {
+
+    private static final long COMMENTED_BOOK_ID = 1L;
+    private static final long COMMENT_ID = 1L;
+    private static final long LAST_COMMENT_ID_FOR_COMMENTED_BOOK = 2;
 
     @Autowired
     private JpaBookCommentRepository repositoryJpa;
@@ -44,27 +48,18 @@ public class JpaBookCommentRepositoryTest {
     @DisplayName("должен загружать список всех комментариев книги")
     @Test
     void shouldReturnCorrectBookCommentsList() {
-        // произвольная книга у которой есть комментарии
-        var commentedBooks = em.getEntityManager()
-                .createQuery("select bc.book.id from BookComment bc", Long.class).getResultList();
-        var actualBookComments = repositoryJpa.findForBook(commentedBooks.get(0));
-
-        TypedQuery<BookComment> expectedBookCommentsQuery = em.getEntityManager()
-                .createQuery("select bc from BookComment bc where bc.book.id = :book_id", BookComment.class);
-        expectedBookCommentsQuery.setParameter("book_id", commentedBooks.get(0)).getResultList();
-        var expectedBookComments = expectedBookCommentsQuery.getResultList();
-
+        var actualBookComments = repositoryJpa.findForBook(COMMENTED_BOOK_ID);
+        var expectedBookComments = LongStream.range(1, LAST_COMMENT_ID_FOR_COMMENTED_BOOK + 1).boxed()
+                .map(id -> em.find(BookComment.class, id)).toList();
         assertThat(actualBookComments).usingRecursiveComparison()
                 .ignoringExpectedNullFields().isEqualTo(expectedBookComments);
-
     }
 
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldSaveNewBookComment() {
-        // произвольная книга
-        var listBooks = em.getEntityManager().createQuery("select b from Book b", Book.class).getResultList();
-        var expectedBookComment = new BookComment(0, listBooks.get(0), "NewComment");
+        var commentedBook = em.find(Book.class, COMMENTED_BOOK_ID);
+        var expectedBookComment = new BookComment(0, commentedBook, "NewComment");
         var returnedBookComment = repositoryJpa.save(expectedBookComment);
         assertThat(returnedBookComment).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -77,13 +72,11 @@ public class JpaBookCommentRepositoryTest {
     @DisplayName("должен сохранять измененный комментарий")
     @Test
     void shouldSaveUpdatedBookComment() {
-        var currenBookComment = em.getEntityManager()
-                .createQuery("select bc from BookComment bc", BookComment.class).getResultList().get(0);
+        var currenBookComment = em.find(BookComment.class, COMMENT_ID);
         em.detach(currenBookComment);
 
         var expectedBookComment = new BookComment(currenBookComment.getId(), currenBookComment.getBook()
                 , "Modified " + currenBookComment.getComment());
-
         var returnedBookComment = repositoryJpa.save(expectedBookComment);
         assertThat(returnedBookComment).isNotNull()
                 .matches(bookComment -> bookComment.getId() > 0)
@@ -97,10 +90,10 @@ public class JpaBookCommentRepositoryTest {
     @DisplayName("должен удалять комментарий по id ")
     @Test
     void shouldDeleteBookComment() {
-        var currenBookComment = em.getEntityManager()
-                .createQuery("select bc from BookComment bc", BookComment.class).getResultList().get(0);
+        var currenBookComment = em.find(BookComment.class, COMMENT_ID);;
         assertThat(currenBookComment).isNotNull();
         em.detach(currenBookComment);
+
         repositoryJpa.deleteById(currenBookComment.getId());
         var deletedBookComment = em.find(BookComment.class, currenBookComment.getId());
         assertThat(deletedBookComment).isNull();

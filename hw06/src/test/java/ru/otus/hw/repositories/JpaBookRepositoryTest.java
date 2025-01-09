@@ -1,6 +1,5 @@
 package ru.otus.hw.repositories;
 
-import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +12,9 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 @Import({JpaBookRepository.class, JpaGenreRepository.class})
 class JpaBookRepositoryTest {
+
+    private static final long EXPECTED_NUMBER_OF_BOOKS = 3;
+    private static final long BOOK_ID = 1L;
+    private static final long NEW_AUTHOR_ID = 3L;
+    private static final List<Long> NEW_GENRE_IDS = List.of(2L, 3L, 4L);
+
 
     @Autowired
     private JpaBookRepository repositoryJpa;
@@ -46,22 +53,17 @@ class JpaBookRepositoryTest {
     @Test
     void shouldReturnCorrectBooksList() {
         var actualBooks = repositoryJpa.findAll();
-        var expectedBooks = em.getEntityManager().createQuery("select b from Book b", Book.class).getResultList();
+        var expectedBooks = LongStream.range(1, EXPECTED_NUMBER_OF_BOOKS + 1).boxed()
+                .map(id -> em.find(Book.class, id)).toList();
         assertThat(actualBooks).usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBooks);
-        // в случае большого количества книг вытаскивать все и сравнивать думаю долго и избыточно
-        // и лучше ограничится count-ом ниже и выборочной сверкой, но пока так,
-        // чтоб без фанатизма и не думать о выборочной сверке)
-        //  var countBooks= em.getEntityManager()
-        //          .createQuery("select count(b) from Book b", Long.class).getSingleResult();
-        //  assertThat(countBooks).isEqualTo(actualBooks.size());
     }
 
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var listAuthors = em.getEntityManager().createQuery("select a from Author a", Author.class).getResultList();
-        var listGenres = em.getEntityManager().createQuery("select g from Genre g", Genre.class).getResultList();
-        var expectedBook = new Book(0, "Book of all genres", listAuthors.get(0), listGenres);
+        var author = em.find(Author.class, NEW_AUTHOR_ID);
+        var listGenres = NEW_GENRE_IDS.stream().map(i -> em.find(Genre.class,i)).toList();
+        var expectedBook = new Book(0, "New test book 111222", author, listGenres);
         var returnedBook = repositoryJpa.save(expectedBook);
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -74,21 +76,15 @@ class JpaBookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var currenBook = em.getEntityManager()
-                .createQuery("select b from Book b", Book.class).getResultList().get(0);
+        var currenBook = em.find(Book.class, BOOK_ID);
         em.detach(currenBook);
-
-        TypedQuery<Author> queryAuthor = em.getEntityManager()
-                .createQuery("select a from Author a where a.id != :id", Author.class);
-        queryAuthor.setParameter("id", currenBook.getAuthor().getId());
-        var newAuthor = queryAuthor.getResultList().get(0);
-
-        var newGenres = em.getEntityManager().createQuery("select g from Genre g", Genre.class).getResultList();
+        var newAuthor = em.find(Author.class, NEW_AUTHOR_ID);
+        var newListGenres = NEW_GENRE_IDS.stream().map(i -> em.find(Genre.class,i)).toList();
 
         var expectedBook = new Book(currenBook.getId(),
-                "Modified " + currenBook.getTitle(), newAuthor, newGenres);
-
+                "Modified " + currenBook.getTitle(), newAuthor, newListGenres);
         var returnedBook = repositoryJpa.save(expectedBook);
+
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
@@ -101,12 +97,12 @@ class JpaBookRepositoryTest {
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        var currenBook = em.getEntityManager()
-                .createQuery("select b from Book b", Book.class).getResultList().get(0);
+        var currenBook = em.find(Book.class, BOOK_ID);
         assertThat(currenBook).isNotNull();
         em.detach(currenBook);
-        repositoryJpa.deleteById(currenBook.getId());
-        var deletedBook = em.find(Book.class, currenBook.getId());
+
+        repositoryJpa.deleteById(BOOK_ID);
+        var deletedBook = em.find(Book.class, BOOK_ID);
         assertThat(deletedBook).isNull();
     }
 }
