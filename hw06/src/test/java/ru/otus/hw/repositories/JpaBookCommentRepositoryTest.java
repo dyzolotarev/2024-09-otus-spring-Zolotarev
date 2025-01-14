@@ -64,8 +64,8 @@ public class JpaBookCommentRepositoryTest {
         assertThat(returnedBookComment).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBookComment);
-        var foundBook = Optional.ofNullable(em.find(Book.class, returnedBookComment.getId()));
-        assertThat(foundBook).isPresent().get()
+        var foundBookComment = Optional.ofNullable(em.find(BookComment.class, returnedBookComment.getId()));
+        assertThat(foundBookComment).isPresent().get()
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(returnedBookComment);
     }
 

@@ -13,6 +13,6 @@ values (1, 1),   (1, 2),
        (2, 3),   (2, 4),
        (3, 5),   (3, 6);
 
-insert into book_comments (id, book_id, comment)
-values (1, 1, 'comment1' ), (2, 1, 'comment2'),
-       (3, 2, 'comment3' ), (4, 2, 'comment4');
+insert into book_comments (book_id, comment)
+values (1, 'comment1' ), (1, 'comment2'),
+       (2, 'comment3' ), (2, 'comment4');
