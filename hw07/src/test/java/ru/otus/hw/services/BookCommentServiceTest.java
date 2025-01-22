@@ -42,9 +42,7 @@ public class BookCommentServiceTest {
     @Test
     void shouldReturnCorrectCommentById() {
         var actualBookComment = bookCommentService.findById(COMMENT_ID);
-        var book = new BookDto(COMMENTED_BOOK_ID, "BookTitle_2", new AuthorDto(2, "Author_2"),
-                List.of(new GenreDto(3, "Genre_3"), new GenreDto(4, "Genre_4")));
-        var expectedBookComment = new BookCommentDto(COMMENT_ID, book, "comment3");
+        var expectedBookComment = new BookCommentDto(COMMENT_ID, null, "comment3");
         assertThat(actualBookComment).get().usingRecursiveComparison()
                 .ignoringExpectedNullFields().isEqualTo(expectedBookComment);
     }

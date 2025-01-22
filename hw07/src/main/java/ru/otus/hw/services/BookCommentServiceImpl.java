@@ -26,13 +26,11 @@ public class BookCommentServiceImpl implements BookCommentService {
     private final BookCommentConverter bookCommentConverter;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<BookCommentDto> findById(long id) {
         return bookCommentRepository.findById(id).map(bookCommentConverter::bookCommentToBookCommentDto);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookCommentDto> findForBook(long bookId) {
         return bookCommentRepository.findByBookId(bookId).stream()
                 .map(bookCommentConverter::bookCommentToBookCommentDto).collect(Collectors.toList());

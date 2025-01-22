@@ -18,16 +18,7 @@ public class BookCommentConverter {
     public BookCommentDto bookCommentToBookCommentDto(BookComment bookComment) {
         BookCommentDto bookCommentDto = new BookCommentDto();
         bookCommentDto.setId(bookComment.getId());
-        bookCommentDto.setBook(bookConverter.bookToBookDto(bookComment.getBook()));
         bookCommentDto.setComment(bookComment.getComment());
         return bookCommentDto;
-    }
-
-    public BookComment bookCommentDtoToBookComment(BookCommentDto bookCommentDto) {
-        BookComment bookComment = new BookComment();
-        bookComment.setId(bookCommentDto.getId());
-        bookComment.setBook(bookConverter.bookDtoToBook(bookCommentDto.getBook()));
-        bookComment.setComment(bookCommentDto.getComment());
-        return bookComment;
     }
 }
