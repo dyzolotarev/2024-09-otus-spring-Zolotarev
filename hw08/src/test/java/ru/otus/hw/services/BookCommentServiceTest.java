@@ -1,11 +1,10 @@
 package ru.otus.hw.services;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.converters.BookCommentConverter;
 import ru.otus.hw.converters.BookConverter;
@@ -16,24 +15,24 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 @DisplayName("Сервис для работы с комментариями к книгам ")
 @DataMongoTest
 @Import({BookCommentConverter.class, BookConverter.class, AuthorConverter.class, GenreConverter.class,
         BookCommentServiceImpl.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Transactional(propagation = Propagation.NEVER)
 public class BookCommentServiceTest {
 
     private static final long EXPECTED_NUMBER_OF_COMMENTS = 2;
     private static final String TITLE_OF_BOOK_WITH_COMMENTS = "BookTitle_1";
+    private static final String TITLE_OF_BOOK_WITH_COMMENTS_FOR_DELETE = "BookTitle_2";
 
     @Autowired
     private BookCommentService bookCommentService;
 
     @DisplayName("должен загружать список всех комментариев книги")
-    @Order(1)
     @Test
     void shouldReturnCorrectBookCommentsList() {
         var actualBookComments = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS);
@@ -46,7 +45,6 @@ public class BookCommentServiceTest {
     }
 
     @DisplayName("должен сохранять новый комментарий, обрабатывать неверные параметры")
-    @Order(2)
     @Test
     void shouldSaveNewBookComment() {
         String newComment = "New Comment";
@@ -66,7 +64,6 @@ public class BookCommentServiceTest {
     }
 
     @DisplayName("должен обновлять комментарий, обрабатывать неверные параметры")
-    @Order(2)
     @Test
     void shouldUpdateNewBookComment() {
         String modifiedComment = "Modified book comment";
@@ -88,14 +85,14 @@ public class BookCommentServiceTest {
     @DisplayName("должен удалять все комментарии книги")
     @Test
     void shouldDeleteBookComment() {
-        var countCommentsBefore = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS).size();
+        var countCommentsBefore = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS_FOR_DELETE).size();
         assertThat(countCommentsBefore).isGreaterThan(0);
 
-        bookCommentService.deleteByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS);
-        var countCommentsAfter = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS).size();
+        bookCommentService.deleteByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS_FOR_DELETE);
+        var countCommentsAfter = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS_FOR_DELETE).size();
         assertThat(countCommentsAfter).isEqualTo(0);
 
-        var deletedBookComment = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS);
+        var deletedBookComment = bookCommentService.findByBookTitle(TITLE_OF_BOOK_WITH_COMMENTS_FOR_DELETE);
         assertThat(deletedBookComment).isEmpty();
     }
 }

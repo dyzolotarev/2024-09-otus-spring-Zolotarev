@@ -2,16 +2,12 @@ package ru.otus.hw.services;
 
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.hw.converters.AuthorConverter;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.converters.GenreConverter;
@@ -24,16 +20,16 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
 
 @DisplayName("Сервис для работы с книгами ")
 @DataMongoTest
 @Import({AuthorConverter.class, GenreConverter.class, BookConverter.class, BookServiceImpl.class,})
-@TestMethodOrder(OrderAnnotation.class)
-@Transactional(propagation = Propagation.NEVER)
 public class BookServiceTest {
 
-    private static final long EXPECTED_NUMBER_OF_BOOKS = 3;
     private static final List<String> EXISTING_BOOK_LIST = List.of ("BookTitle_1", "BookTitle_2", "BookTitle_3");
     private static final String EXISTING_AUTHOR_NAME = "Author_2";
     private static final Set<String> EXISTING_GENRE_NAMES = Set.of("Genre_4", "Genre_5", "Genre_6");
@@ -42,7 +38,6 @@ public class BookServiceTest {
     private BookService bookService;
 
     @DisplayName("должен загружать книгу по названию")
-    @Order(1)
     @Test
     void shouldReturnCorrectBookById() {
         String existingBookTitle = EXISTING_BOOK_LIST.get(1);
@@ -53,20 +48,18 @@ public class BookServiceTest {
         assertThat(actualBook).get().usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
     }
 
+    @DirtiesContext(methodMode = BEFORE_METHOD)
     @DisplayName("должен загружать список всех книг")
-    @Order(1)
     @Test
     void shouldReturnCorrectBooksList() {
         var actualBooks = bookService.findAll();
-        assertThat(actualBooks.size()).isEqualTo(EXPECTED_NUMBER_OF_BOOKS);
-
         var expectedBooks = EXISTING_BOOK_LIST.stream()
                 .map(title -> bookService.findByTitle(title).get()).toList();
+        assertThat(expectedBooks.size()).isEqualTo(actualBooks.size());
         assertThat(expectedBooks).usingRecursiveComparison().isEqualTo(actualBooks);
     }
 
     @DisplayName("должен сохранять новую книгу, обрабатывать пустые и неверные параметры")
-    @Order(2)
     @Test
     void shouldSaveNewBook() {
         String newBookTitle = "New Book Title " + ObjectId.get(); // for unique;
@@ -97,7 +90,6 @@ public class BookServiceTest {
     }
 
     @DisplayName("должен обновлять существующую книгу, обрабатывать пустые и неверные параметры")
-    @Order(2)
     @Test
     void shouldUpdateBook() {
         String existingBookTitle = EXISTING_BOOK_LIST.get(0);
@@ -128,10 +120,9 @@ public class BookServiceTest {
     }
 
     @DisplayName("должен удалять книгу по названию")
-    @Order(2)
     @Test
     void shouldDeleteBook() {
-        String existingBookTitle = EXISTING_BOOK_LIST.get(1);
+        String existingBookTitle = EXISTING_BOOK_LIST.get(2);
         var countBooksBefore = bookService.findAll().size();
         bookService.deleteByTitle(existingBookTitle);
         var countBooksAfter = bookService.findAll().size();
