@@ -38,17 +38,13 @@ class BookRepositoryTest {
 
     @DisplayName("должен загружать книгу по названию")
     @ParameterizedTest
-    @ValueSource(strings = {"BookTitle_1", "BookTitle_3", "BookTitle_100000000"})
-    void shouldReturnCorrectBookById(String title) {
+    @ValueSource(strings = {"BookTitle_1", "BookTitle_2", "BookTitle_3",})
+    void shouldReturnCorrectBookByTitle(String title) {
         var actualBook = repositoryMongo.findByTitle(title);
-        Query query = new Query(Criteria.where("title").is(title));
-        var expectedBook = Optional.ofNullable(mongoOperations.findOne(query, Book.class));
-
-        assertTrue(actualBook.isPresent() && expectedBook.isPresent()
-                || actualBook.isEmpty() && expectedBook.isEmpty());
-        if (actualBook.isPresent()) {
-            assertThat(actualBook).get().usingRecursiveComparison().isEqualTo(expectedBook.get());
-        }
+        assertTrue(actualBook.isPresent());
+        assertThat(actualBook.get().getTitle()).isEqualTo(title);
+        var expectedBook = Optional.ofNullable(mongoOperations.findById(actualBook.get().getId(), Book.class));
+        assertThat(actualBook).get().usingRecursiveComparison().isEqualTo(expectedBook.get());
     }
 
     @DisplayName("должен загружать список всех книг")

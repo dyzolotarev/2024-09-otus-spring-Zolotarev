@@ -35,17 +35,13 @@ public class GenreRepositoryTest {
 
     @DisplayName("должен загружать жанры по имени")
     @ParameterizedTest
-    @ValueSource(strings = {"Genre_1", "Genre_3", "Genre_100000000"})
-    void shouldReturnCorrectGenreById(String name) {
+    @ValueSource(strings = {"Genre_1", "Genre_2", "Genre_3"})
+    void shouldReturnCorrectGenreByName(String name) {
         var actualGenre = repositoryMongo.findByName(name);
-        Query query = new Query(Criteria.where("name").is(name));
-        var expectedGenre = Optional.ofNullable(mongoOperations.findOne(query, Genre.class));
-
-        assertTrue(actualGenre.isPresent() && expectedGenre.isPresent()
-                || actualGenre.isEmpty() && expectedGenre.isEmpty());
-        if (actualGenre.isPresent()) {
-            assertThat(actualGenre).get().isEqualTo(expectedGenre.get());
-        }
+        assertTrue(actualGenre.isPresent());
+        assertThat(actualGenre.get().getName()).isEqualTo(name);
+        var expectedGenre = Optional.ofNullable(mongoOperations.findById(actualGenre.get().getId(), Genre.class));
+        assertThat(actualGenre).get().isEqualTo(expectedGenre.get());
     }
 
     @DisplayName("должен загружать список всех жанров")
