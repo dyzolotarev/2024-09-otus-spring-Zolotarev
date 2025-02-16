@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all persons</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        h3 {
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+
+    </style>
+
+    <style type="text/css" th:inline="text">
+        [[h3]] {
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+
+    </style>
+</head>
+<body>
+<ul>
+    <li><a th:href="@{/}">Books</a></li>
+    <li> <a th:href="@{/authors}">Authors</a></li>
+    <li><a th:href="@{/genres}">Genres</a></li>
+</ul>
+<h3>Error:</h3>
+<span th:text="${errorText}">Error text</span>
+</body>
+</html>
