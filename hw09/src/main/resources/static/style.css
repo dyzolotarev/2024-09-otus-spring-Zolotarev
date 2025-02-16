@@ -1,0 +1,66 @@
+body {
+    padding: 50px;
+}
+
+h3 {
+    background-repeat: no-repeat;
+    padding: 2px;
+    padding-left: 30px;
+}
+
+.default {
+    border: 1px solid steelblue;
+    width: 300px;
+    border-collapse: collapse;
+}
+
+.default tr td, th {
+    padding: 5px;
+    border: 1px solid steelblue;
+}
+
+.default td:last-child, td:first-child {
+    width: 50px;
+}
+
+.default ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.default label {
+    display: inline-block;
+    width: 100px;
+}
+
+.default input:read-only {
+    background: lightgray;
+}
+
+div.row label {
+    display: inline-block;
+    width: 100px;
+}
+
+div.row input:read-only {
+    background: lightgray;
+}
+
+div.row {
+    margin-top: 10px;
+}
+
+.delete-button {
+    border: unset;
+    background: unset;
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: serif;
+    font-size: inherit;
+}
+
+.errors {
+    color: red;
+}
