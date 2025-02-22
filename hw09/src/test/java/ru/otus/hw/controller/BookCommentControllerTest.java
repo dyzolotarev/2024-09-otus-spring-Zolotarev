@@ -56,8 +56,7 @@ public class BookCommentControllerTest {
     void shouldRenderListPageCommentWithCorrectViewAndModelAttributes() throws Exception {
         when(bookCommentService.findForBook(book.getId())).thenReturn(bookComments);
         when(bookService.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mvc.perform(get("/comments").param("id", String.valueOf(book.getId())))
+        mvc.perform(get("/comments/{book_id}", book.getId()))
                 .andExpect(view().name("comments"))
                 .andExpect(model().attribute("book", book))
                 .andExpect(model().attribute("comments", bookComments));
@@ -69,20 +68,17 @@ public class BookCommentControllerTest {
     void shouldRenderEditCommentPageWithCorrectViewAndModelAttributes(int id) throws Exception {
         BookCommentDto expectedComment = bookComments.get(id);
         when(bookCommentService.findById(expectedComment.getId())).thenReturn(Optional.of(expectedComment));
-        mvc.perform(get("/edit_comment").param("book_id", String.valueOf(book.getId()))
-                        .param("id", String.valueOf(expectedComment.getId())))
+        mvc.perform(get("/edit_comment/{book_id}/{id}", book.getId(), expectedComment.getId()))
                 .andExpect(view().name("edit_comment"))
                 .andExpect(model().attribute("comment", expectedComment))
-                .andExpect(model().attribute("bookId", String.valueOf(book.getId())));
+                .andExpect(model().attribute("bookId", book.getId()));
     }
 
     @DisplayName("должен отображать ошибку, если комментарий не найден")
     @Test
     void shouldRenderErrorPageWhenBookCommentNotFound() throws Exception {
         when(bookCommentService.findById(1L)).thenThrow(new NotFoundException());
-        mvc.perform(get("/edit_comment")
-                        .param("book_id", String.valueOf(book.getId()))
-                        .param("id", "1"))
+        mvc.perform(get("/edit_comment/{book_id}/{id}", book.getId(), 1L))
                 .andExpect(view().name("customError"));
     }
 
@@ -90,14 +86,14 @@ public class BookCommentControllerTest {
     @Test
     void shouldUpdateCommentPageAndRedirectToBookPage() throws Exception {
         BookCommentDto existingComment = bookComments.get(0);
-        BookCommentForViewDto modifiedComment = new BookCommentForViewDto(String.valueOf(existingComment.getId())
+        BookCommentForViewDto modifiedComment = new BookCommentForViewDto(existingComment.getId()
                 , "Modified comment");
         when(bookCommentService.findById(existingComment.getId())).thenReturn(Optional.of(existingComment));
-        mvc.perform(post("/edit_comment")
+        mvc.perform(post("/edit_comment/{book_id}/{id}", book.getId(), existingComment.getId())
                         .param("id", String.valueOf(existingComment.getId()))
                         .param("bookId", String.valueOf(book.getId()))
                         .param("comment", modifiedComment.getComment()))
-                .andExpect(view().name("redirect:/comments?id=" + book.getId()));
+                .andExpect(view().name("redirect:/comments/" + book.getId()));
         verify(bookCommentService, times(1))
                 .update(existingComment.getId(), modifiedComment.getComment());
     }
@@ -105,12 +101,12 @@ public class BookCommentControllerTest {
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldInsertCommentPageAndRedirectToBookPage() throws Exception {
-        BookCommentForViewDto newComment = new BookCommentForViewDto("", "New comment");
-        mvc.perform(post("/edit_comment")
-                        .param("id", "")
+        BookCommentForViewDto newComment = new BookCommentForViewDto(0, "New comment");
+        mvc.perform(post("/edit_comment/{book_id}/{id}", book.getId(), 0)
                         .param("bookId", String.valueOf(book.getId()))
+                        .param("id", "0")
                         .param("comment", newComment.getComment()))
-                .andExpect(view().name("redirect:/comments?id=" + book.getId()));
+                .andExpect(view().name("redirect:/comments/" + book.getId()));
         verify(bookCommentService, times(1))
                 .insert(book.getId(), newComment.getComment());
     }
@@ -119,10 +115,8 @@ public class BookCommentControllerTest {
     @Test
     void shouldDeleteCommentPageAndRedirectToBookPage() throws Exception {
         BookCommentDto existingComment = bookComments.get(1);
-        mvc.perform(post("/delete_comment")
-                        .param("id", String.valueOf(existingComment.getId()))
-                        .param("book_id", String.valueOf(book.getId())))
-                .andExpect(view().name("redirect:/comments?id=" + book.getId()));
+        mvc.perform(post("/delete_comment/{book_id}/{id}", book.getId(), existingComment.getId()))
+                .andExpect(view().name("redirect:/comments/" + book.getId()));
         verify(bookCommentService, times(1))
                 .deleteById(existingComment.getId());
     }

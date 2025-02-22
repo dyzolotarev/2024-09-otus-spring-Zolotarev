@@ -10,11 +10,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class BookForViewDto {
-    private String id;
+    private long id;
 
     private String title;
 
-    private String authorId;
+    private long authorId;
 
-    private Set<String> genreIds;
+    private Set<Long> genreIds;
 }

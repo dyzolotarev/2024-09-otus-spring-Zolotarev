@@ -4,21 +4,21 @@
     <meta charset="UTF-8"/>
     <link rel="stylesheet" href="/style.css">
 
-    <div class="row" th:if="${book.id != ''}">
+    <div class="row" th:if="${book.id != 0}">
         <title>Edit book</title>
     </div>
-    <div class="row" th:if="${book.id == ''}">
+    <div class="row" th:if="${book.id == 0}">
         <title>Add new book</title>
     </div>
 
 </head>
 <body>
-<form id="edit-form" action="edit_book.html" th:method="post" th:action="@{/edit_book(id=${book.id})}" th:object="${book}">
+<form id="edit-form" action="edit_book.html" th:method="post" th:action="@{'/edit_book/' + ${book.id}}" th:object="${book}">
     <h3>Book Info:</h3>
 
-    <div class="row" th:if="${book.id != ''}">
+    <div class="row" th:if="${book.id != 0}">
         <label for="id-input">ID:</label>
-        <input id="id-input" type="text" readonly="readonly" value="1" th:value="${book.id}"/>
+        <input id="id-input" name="id"  type="text" readonly="readonly" value="1" th:value="${book.id}"/>
     </div>
 
     <div class="row">

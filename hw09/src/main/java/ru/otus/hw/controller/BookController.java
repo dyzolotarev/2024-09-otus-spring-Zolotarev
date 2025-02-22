@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
@@ -19,7 +19,6 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,9 +39,9 @@ public class BookController {
         return "books";
     }
 
-    @GetMapping("/edit_book")
-    public String editBook(@RequestParam("id") String id, Model model) {
-        BookDto book = bookService.findById(Long.parseLong(id)).orElseThrow(NotFoundException::new);
+    @GetMapping("/edit_book/{id}")
+    public String editBook(@PathVariable("id") long id, Model model) {
+        BookDto book = bookService.findById(id).orElseThrow(NotFoundException::new);
         model.addAttribute("book", bookConverter.bookDtoToBookForViewDto(book));
 
         List<Long> selectedGenres = book.getGenres().stream().map(GenreDto::getId).toList();
@@ -57,35 +56,33 @@ public class BookController {
         return "edit_book";
     }
 
-    @PostMapping("/edit_book")
+    @PostMapping("/edit_book/{id}")
     public String saveBook(@ModelAttribute("book") BookForViewDto book) {
-        if (book.getId().isEmpty()) {
-            bookService.insert(book.getTitle(), Long.parseLong(book.getAuthorId()),
-                    book.getGenreIds().stream().map(Long::parseLong).collect(Collectors.toSet()));
+        if (book.getId() == 0) {
+            bookService.insert(book.getTitle(), book.getAuthorId(), book.getGenreIds());
         } else {
-            bookService.update(Long.parseLong(book.getId()), book.getTitle(), Long.parseLong(book.getAuthorId()),
-                    book.getGenreIds().stream().map(Long::parseLong).collect(Collectors.toSet()));
+            bookService.update(book.getId(), book.getTitle(), book.getAuthorId(), book.getGenreIds());
         }
         return "redirect:/";
     }
 
-    @GetMapping("/delete_book")
-    public String deleteBook(@RequestParam("id") String id, Model model) {
-        BookDto book = bookService.findById(Long.parseLong(id)).orElseThrow(NotFoundException::new);
+    @GetMapping("/delete_book/{id}")
+    public String deleteBook(@PathVariable("id") long id, Model model) {
+        BookDto book = bookService.findById(id).orElseThrow(NotFoundException::new);
         model.addAttribute("bookDescription", bookConverter.bookToString(book));
         model.addAttribute("id", id);
         return "delete_book";
     }
 
-    @PostMapping("/delete_book")
-    public String removeBook(@RequestParam("id") String id) {
-        bookService.deleteById(Long.parseLong(id));
+    @PostMapping("/delete_book/{id}")
+    public String removeBook(@PathVariable("id") long id) {
+        bookService.deleteById(id);
         return "redirect:/";
     }
 
     @GetMapping("/create_book")
     public String createBook(Model model) {
-        BookForViewDto book = new BookForViewDto("", "", "", Set.of(""));
+        BookForViewDto book = new BookForViewDto(0L, "", 0L, Set.of(0L));
         model.addAttribute("book", book);
 
         List<AuthorDto> authors = authorService.findAll();

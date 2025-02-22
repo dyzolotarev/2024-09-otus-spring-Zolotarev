@@ -6,7 +6,7 @@
     <title>Delete confirmation</title>
 </head>
 <body>
-<form id="delete-form" action="delete_book.html" th:method="post" th:action="@{/delete_book(id=${id})}">
+<form id="delete-form" action="delete_book.html" th:method="post" th:action="@{'/delete_book/' + ${id}}">
     <h3>Please confirm the deletion of the book:</h3>
 
     <div class="row" th:text="${bookDescription}">Book descripton</div>

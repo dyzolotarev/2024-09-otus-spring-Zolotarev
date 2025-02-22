@@ -25,10 +25,10 @@
         <td th:text="${comment.id}">1</td>
         <td th:text="${comment.comment}">Good book</td>
         <td>
-            <a href="edit_comment.html" th:href="@{/edit_comment(id=${comment.id},book_id=${book.id})}">Edit</a>
+            <a href="edit_comment.html" th:href="@{'/edit_comment/' + ${book.id} + '/' + ${comment.id}}">Edit</a>
         </td>
         <td>
-            <form action="#" th:action="@{/delete_comment(id=${comment.id},book_id=${book.id})}" th:method="delete">
+            <form action="#" th:action="@{'/delete_comment/' + ${book.id} + '/' + ${comment.id}}" th:method="delete">
                 <button id="delete-button" class="delete-button" type="submit">Delete</button>
             </form>
         </td>
@@ -36,6 +36,6 @@
     </tbody>
 </table>
 </br>
-<button type="button" th:onclick="|window.location.href='@{/create_comment(book_id=${book.id})}'|">Add new comment</button>
+<button type="button" th:onclick="|window.location.href='@{'/create_comment/' + ${book.id}}'|">Add new comment</button>
 </body>
 </html>

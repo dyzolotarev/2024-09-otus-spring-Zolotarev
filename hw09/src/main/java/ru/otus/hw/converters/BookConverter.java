@@ -46,12 +46,11 @@ public class BookConverter {
     }
 
     public BookForViewDto bookDtoToBookForViewDto(BookDto bookDto) {
-        var bookFlatDto = new BookForViewDto();
-        bookFlatDto.setId(String.valueOf(bookDto.getId()));
-        bookFlatDto.setTitle(bookDto.getTitle());
-        bookFlatDto.setAuthorId(String.valueOf(bookDto.getAuthor().getId()));
-        bookFlatDto.setGenreIds(bookDto.getGenres().stream().map(GenreDto::getId).map(String::valueOf)
-                .collect(Collectors.toSet()));
-        return bookFlatDto;
+        var bookForViewDto = new BookForViewDto();
+        bookForViewDto.setId(bookDto.getId());
+        bookForViewDto.setTitle(bookDto.getTitle());
+        bookForViewDto.setAuthorId(bookDto.getAuthor().getId());
+        bookForViewDto.setGenreIds(bookDto.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet()));
+        return bookForViewDto;
     }
 }

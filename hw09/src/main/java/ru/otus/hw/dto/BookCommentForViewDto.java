@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookCommentForViewDto {
-    private String id;
+    private long id;
 
     private String comment;
 }
