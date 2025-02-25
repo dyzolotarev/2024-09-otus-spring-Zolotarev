@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="/style.css">
+    <title>List of all books</title>
+</head>
+<body>
+<ul>
+    <li><a th:href="@{/}">Books</a></li>
+    <li> <a th:href="@{/authors}">Authors</a></li>
+    <li><a th:href="@{/genres}">Genres</a></li>
+</ul>
+<h3>Books:</h3>
+<table class="default">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genres</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book: ${books}">
+        <td th:text="${book.id}">1</td>
+        <td th:text="${book.title}">Book about delicious and healthy food</td>
+        <td th:text="${book.author.fullName}">John Doe</td>
+        <td>
+            <ul>
+                <li th:each="genre: ${book.genres}" th:text="${genre.name}">Horror</li>
+            </ul>
+        </td>
+        <td>
+            <a href="edit_book.html" th:href="@{'/edit_book/' + ${book.id}}">Edit</a>
+        </td>
+        <td>
+            <a href="delete_book.html" th:href="@{'/delete_book/' + ${book.id}}">Delete</a>
+        </td>
+        <td>
+            <a href="comments.html" th:href="@{'/comments/' + ${book.id}}">Comments</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</br>
+<button type="button" th:onclick="|window.location.href='@{/create_book}'|">Add new book</button>
+</body>
+</html>
